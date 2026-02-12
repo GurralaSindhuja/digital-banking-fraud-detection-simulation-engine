@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Digital Banking Fraud Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body class="container mt-4">
+
+<h2 class="mb-4">🏦 Digital Banking Fraud Detection Dashboard</h2>
+
+<!-- Transaction Form -->
+<form action="/transaction/create" method="post"
+      class="card p-3 mb-4 shadow">
+
+    <h5 class="mb-3">➕ Simulate Transaction</h5>
+
+    <input type="text" name="accountNumber"
+           class="form-control mb-2"
+           placeholder="Account Number" required>
+
+    <input type="number" name="amount"
+           class="form-control mb-2"
+           placeholder="Amount" required>
+
+    <input type="text" name="location"
+           class="form-control mb-3"
+           placeholder="Location" required>
+
+    <button type="submit" class="btn btn-primary">
+        Simulate Transaction
+    </button>
+</form>
+
+<!-- Navigation -->
+<div class="mb-3">
+    <a href="/fraud-report" class="btn btn-danger">
+        🚨 View Fraud Report
+    </a>
+</div>
+
+<!-- Transactions Table -->
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+    <tr>
+        <th>Account</th>
+        <th>Amount</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Risk Score</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="tx : ${transactions}">
+        <td th:text="${tx.accountNumber}"></td>
+        <td>₹ <span th:text="${tx.amount}"></span></td>
+        <td th:text="${tx.location}"></td>
+
+        <td>
+            <span th:text="${tx.status}"
+                  th:classappend="
+                    ${tx.status == 'FRAUD'} ? 'badge bg-danger' :
+                    (${tx.status == 'SUSPICIOUS'} ? 'badge bg-warning text-dark' :
+                    'badge bg-success')">
+            </span>
+        </td>
+
+        <td th:text="${tx.riskScore}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

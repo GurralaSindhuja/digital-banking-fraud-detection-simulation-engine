@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Transactions</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+    <style>
+        .fraud-row {
+            background-color: #f8d7da !important;
+        }
+    </style>
+</head>
+
+<body class="container mt-4">
+
+<h2 class="mb-2">📋 All Transactions</h2>
+
+<p class="text-muted">
+    Total Records:
+    <strong th:text="${transactions.size()}">0</strong>
+</p>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="/" class="btn btn-secondary">
+        ⬅ Back to Dashboard
+    </a>
+
+    <input type="text"
+           id="search"
+           class="form-control w-25"
+           placeholder="Search by account..."
+           onkeyup="filterTable()">
+</div>
+
+<div style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped table-bordered table-hover">
+
+        <thead class="table-dark sticky-top">
+        <tr>
+            <th>ID</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Risk</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+
+        <tbody id="txTable">
+        <tr th:each="tx : ${transactions}"
+            th:classappend="${tx.status == 'FRAUD'} ? 'fraud-row'">
+
+            <td th:text="${tx.id}"></td>
+            <td th:text="${tx.accountNumber}"></td>
+
+            <td>
+                ₹ <span th:text="${tx.amount}"></span>
+            </td>
+
+            <td th:text="${tx.location}"></td>
+
+            <td>
+            <span
+                    th:text="${tx.status}"
+                    th:classappend="
+                    ${tx.status == 'FRAUD'} ? 'badge bg-danger' :
+                    (${tx.status == 'SUSPICIOUS'} ? 'badge bg-warning text-dark' :
+                    'badge bg-success')">
+            </span>
+            </td>
+
+            <td th:text="${tx.riskScore}"></td>
+
+            <!-- SAFE DATE RENDER -->
+            <td th:text="${tx.transactionTime != null ?
+                #temporals.format(tx.transactionTime, 'dd-MM-yyyy HH:mm')
+                : 'NA'}">
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+
+<div th:if="${#lists.isEmpty(transactions)}"
+     class="alert alert-info mt-3">
+    No transactions available.
+</div>
+
+<script>
+    function filterTable() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let rows = document.querySelectorAll("#txTable tr");
+
+        rows.forEach(row => {
+            let account = row.cells[1].innerText.toLowerCase();
+            row.style.display = account.includes(input) ? "" : "none";
+        });
+    }
+</script>
+
+</body>
+</html>
